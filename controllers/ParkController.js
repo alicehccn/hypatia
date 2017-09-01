@@ -16,21 +16,21 @@ router.post('/new', (req, res, next) => {
       let entries = {};
       rows.forEach((row) => {
         let entry = {};
-        entry['key'] = cleanRow(row[1]); 
-        entry['name'] = cleanRow(row[9]);
-        // entry['feature'] = cleanRow(row[10]); 
+        const name = cleanRow(row[9]);
+        entry['slug'] = name.toLowerCase().replace(/[^0-9a-z]+/gi, '-'); 
+        entry['name'] = name;
         entry['hours'] = cleanRow(row[11]);
         entry['latitude'] = cleanRow(row[12]);
         entry['longitude'] = cleanRow(row[13]);
-        entries[cleanRow(row[9])] = entry;
+        entries[entry['slug']] = entry;
       })
-      entries = Object.values(entries);
-      Park.insertMany(entries, (err, parks) => {
+      const data = Object.values(entries);
+      Park.insertMany(data, (err, parks) => {
       if (err)
         return res.status(500)
                   .send(err);
       res.status(200)
-         .send(`Created ${entries.length} parks.`);
+         .send(`Created ${data.length} parks.`);
       });
     })
     .catch((err) => {
@@ -52,8 +52,8 @@ router.get('/', (req, res) => {
 });
 
 // Get park by id or name
-router.get('/:name', (req, res) => {
-  Park.find({name: req.params.name}, (err, park) => {
+router.get('/:slug', (req, res) => {
+  Park.find({slug: req.params.slug}, (err, park) => {
     if (err)
       return res.status(500)
                 .send(err);
