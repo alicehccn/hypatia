@@ -13,23 +13,24 @@ router.post('/new', (req, res, next) => {
     .then(res => res.json())
     .then(json => {
       const rows = json.data;
-      let entries = [];
+      let entries = {};
       rows.forEach((row) => {
         let entry = {};
-        entry['key'] = cleanRow(row[1]);
+        entry['key'] = cleanRow(row[1]); 
         entry['name'] = cleanRow(row[9]);
-        entry['feature'] = cleanRow(row[10]);
+        // entry['feature'] = cleanRow(row[10]); 
         entry['hours'] = cleanRow(row[11]);
         entry['latitude'] = cleanRow(row[12]);
         entry['longitude'] = cleanRow(row[13]);
-        entries.push(entry);
+        entries[cleanRow(row[9])] = entry;
       })
+      entries = Object.values(entries);
       Park.insertMany(entries, (err, parks) => {
       if (err)
         return res.status(500)
                   .send(err);
       res.status(200)
-         .send(parks);
+         .send(`Created ${entries.length} parks.`);
       });
     })
     .catch((err) => {
@@ -39,12 +40,25 @@ router.post('/new', (req, res, next) => {
 
 // Get all the parks from db, sorted by name asc
 router.get('/', (req, res) => {
-  Park.find({}).sort({name: 'asc'}).exec((err, parks) => {
+  Park.find({})
+    .sort({name: 'asc'})
+    .exec((err, parks) => {
+      if (err)
+        return res.status(500)
+                  .send(err);
+      res.status(200)
+         .send(parks);
+  });
+});
+
+// Get park by id or name
+router.get('/:name', (req, res) => {
+  Park.find({name: req.params.name}, (err, park) => {
     if (err)
       return res.status(500)
                 .send(err);
     res.status(200)
-       .send(parks);
+       .send(park);
   });
 });
 
