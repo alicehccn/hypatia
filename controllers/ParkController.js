@@ -25,7 +25,7 @@ router.post('/new', (req, res, next) => {
         entries[entry['slug']] = entry;
       })
       const data = Object.values(entries);
-      Park.insertMany(data, (err, parks) => {
+      Park.insertMany(data, (err) => {
       if (err)
         return res.status(500)
                   .send(err);
