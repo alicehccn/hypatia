@@ -4,21 +4,23 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 
-router.use(bodyParser.urlencoded({ extended: true }))
+// router.use(bodyParser.urlencoded({ extended: true }))
+// router.use(bodyParser.json());
 
 const User = require('./User');
 
 // Create a new user
 router.post('/', (req, res) => {
   User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
+    name: req.query.name,
+    email: req.query.email,
+    password: req.query.password
   },
   (err, user) => {
     if (err)
-      return req.status(500)
-                .send('There was a problem adding the entry to the database.');
+      return res.status(500)
+                // .send('There was a problem adding the entry to the database.');
+                .send(err.message);
     res.status(200)
        .send(user);
   });
