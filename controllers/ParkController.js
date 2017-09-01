@@ -4,8 +4,8 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 
-const Park = require('./Park');
-const cleanRow = require('./util').cleanRow;
+const Park = require('../models/Park');
+const cleanRow = require('../util').cleanRow;
 
 // Make an external API call and post data to db
 router.post('/new', (req, res, next) => {
@@ -37,9 +37,9 @@ router.post('/new', (req, res, next) => {
     });
 });
 
-// Get all the parks from db
+// Get all the parks from db, sorted by name asc
 router.get('/', (req, res) => {
-  Park.find({}, (err, parks) => {
+  Park.find({}).sort({name: 'asc'}).exec((err, parks) => {
     if (err)
       return res.status(500)
                 .send(err);
