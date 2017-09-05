@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const FeatureSchema = new mongoose.Schema({
+  parks: { type: Array, required: true },
   name: { type: String, required: true }
 });
 mongoose.model('Feature', FeatureSchema);

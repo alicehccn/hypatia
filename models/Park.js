@@ -2,8 +2,9 @@
 
 const mongoose = require('mongoose');
 const ParkSchema = new mongoose.Schema({
-  slug: { type : String, required : true, unique: true, dropDups : true },
+  id: { type : String, required : true, unique: true, dropDups : true },
   name: { type: String, required: true },
+  features: {type: Array, required: true },
   hours: String,
   latitude: String,
   longitude: String

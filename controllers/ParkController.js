@@ -5,7 +5,9 @@ const router = express.Router();
 const fetch = require('node-fetch');
 
 const Park = require('../models/Park');
+const Feature = require('../models/Feature');
 const cleanRow = require('../util').cleanRow;
+const createSlug = require('../util').createSlug;
 
 // Make an external API call and post data to db
 router.post('/new', (req, res, next) => {
@@ -17,20 +19,28 @@ router.post('/new', (req, res, next) => {
       rows.forEach((row) => {
         let entry = {};
         const name = cleanRow(row[9]);
-        entry['slug'] = name.toLowerCase().replace(/[^0-9a-z]+/gi, '-'); 
+        const parkId = createSlug(name); 
+        entry['id'] = parkId;
         entry['name'] = name;
         entry['hours'] = cleanRow(row[11]);
         entry['latitude'] = cleanRow(row[12]);
         entry['longitude'] = cleanRow(row[13]);
-        entries[entry['slug']] = entry;
-      })
-      const data = Object.values(entries);
-      Park.insertMany(data, (err) => {
+        entries[entry['id']] = entry;
+      });
+      rows.forEach((row) => {
+        const parkId = createSlug(cleanRow(row[9])); 
+        if (!entries[parkId].hasOwnProperty('features')) {
+          entries[parkId]['features'] = [];
+        }
+        entries[parkId]['features'].push(cleanRow(row[10]));
+      });
+      const inputRows = Object.values(entries);
+      Park.insertMany(inputRows, (err) => {
       if (err)
         return res.status(500)
                   .send(err);
       res.status(200)
-         .send(`Created ${data.length} parks.`);
+         .send(`Created ${inputRows.length} parks.`);
       });
     })
     .catch((err) => {

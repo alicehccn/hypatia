@@ -19,6 +19,13 @@ router.post('/new', (req, res, next) => {
         entry['name'] = cleanRow(row[10]);
         entries[entry['name']] = entry;
       })
+      rows.forEach((row) => {
+        const name = cleanRow(row[10]);
+        if (!entries[name].hasOwnProperty('parks')) {
+          entries[name]['parks'] = [];
+        }
+        entries[name]['parks'].push(cleanRow(row[9]));
+      });
       const data = Object.values(entries);
       Feature.insertMany(data, (err) => {
       if (err)
