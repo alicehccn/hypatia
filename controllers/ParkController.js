@@ -23,8 +23,10 @@ router.post('/new', (req, res, next) => {
         entry['id'] = parkId;
         entry['name'] = name;
         entry['hours'] = cleanRow(row[11]);
-        entry['latitude'] = cleanRow(row[12]);
-        entry['longitude'] = cleanRow(row[13]);
+        entry['location'] = {
+          type: 'Point',
+          coordinates: [cleanRow(row[12]), cleanRow(row[13])]
+        };
         entries[entry['id']] = entry;
       });
       rows.forEach((row) => {

@@ -6,8 +6,7 @@ const ParkSchema = new mongoose.Schema({
   name: { type: String, required: true },
   features: {type: Array, required: true },
   hours: String,
-  latitude: String,
-  longitude: String
+  location: Object
 });
 mongoose.model('Park', ParkSchema);
 
